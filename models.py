@@ -2,7 +2,6 @@ import random
 from exceptions import EnemyDown
 from exceptions import GameOver
 
-
 class Enemy:
 
     def __init__(self, level):
@@ -17,47 +16,87 @@ class Enemy:
 
     def decrease_lives(self):
         self.lives -= 1
-        if self.lives == 0:
-            raise EnemyDown()
-        return self.lives
+        if self.lives <= 0:
+            print("Enemy Down!")
+        return self.level
 
 
 class Player:
-    score = None
-    lives = 3
-    allowed_attacs = None
+    score = 0
+    lives = 5
 
     def __init__(self, player_name):
         self.player_name = player_name
 
     @staticmethod
-    def fight(attack, defence):
+    def fight(attack, defense):
         result = None
+        if attack == defense:
+            result = 0
+        elif attack == 2 and defense == 1:
+            print('Win MAG')
+            result = -1
+        elif attack == 3 and defense == 2:
+            print('Win WARRIOR')
+            result = -1
+        elif attack == 1 and defense == 3:
+            print('Win ROGUE')
+            result = -1
+        elif attack == 1 and defense == 2:
+            print('Win MAG')
+            result = 1
+        elif attack == 2 and defense == 3:
+            print('Win WARRIOR')
+            result = 1
+        elif attack == 3 and defense == 1:
+            print('Win ROGUE')
+            result = 1
         return result
 
-    def attack(self, enemy_obj):
-        command_start = str(input())
-        if command_start == "START":
-            print(str("Choose your HERO: 1 - MAG, 2 - WARRIOR, 3 - ROGUE"))
-        move = int(input())
-
-        # if hero == 1:
-        #     return 'Your Choose MAG, Goog luck!'
-        # elif hero == 2:
-        #     return "YEAH, It's WARRIOR!!"
-        # elif hero == 3:
-        #     return "FUCK, You are ROGUE, be careful"
-
-
-
-    def defence(self):
-        pass
-
     def decrease_lives(self):
+        """Метод отнимающий жизни"""
         self.lives -= 1
         if self.lives == 0:
+            print('Your Game is Over')
+            print('Your total score is ', self.score)
+            GameOver.save_result(self.player_name, self.score)
             raise GameOver()
         return self.lives
 
+    def attack(self, enemy_obj):
+        print("Turn Player")
+        self.choice()
+        attack_player = int(input())
+        attack_comp = enemy_obj.select_attack()
+        print(attack_comp)
+        result_fight = Player.fight(attack_player, attack_comp)
+        if result_fight == 0:
+            print("It's a draw!")
+        elif result_fight == 1:
+            print("You attacked successfully")
+            enemy_obj.decrease_lives()
+            self.score += 1
+        elif result_fight == -1:
+            print("You missed!")
+            self.decrease_lives()
 
-dima = Player(5)
+    def defence(self, enemy_obj):
+        print("Turn Computer")
+        self.choice()
+        attack_comp = enemy_obj.select_attack()
+        attack_player = int(input())
+        print(attack_comp)
+        result_fight = Player.fight(attack_comp, attack_player)
+        if result_fight == 0:
+            print("It's a draw!!!")
+        elif result_fight == 1:
+            print("Computer attacked was successful")
+            self.decrease_lives()
+        elif result_fight == -1:
+            print("Enemy missed!")
+            enemy_obj.decrease_lives()
+            self.score += 1
+
+    def choice(self):
+        """Метод для выбора героя"""
+        print("Choose your HERO: 1 - MAG, 2 - WARRIOR, 3 - ROGUE")
