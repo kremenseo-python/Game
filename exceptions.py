@@ -1,16 +1,13 @@
+"""file with exception"""
 
 
 class GameOver(Exception):
-    pass
 
     @staticmethod
     def save_result(name, score):
-        f = open('scores.txt', 'a')
-        f.write(f"Name: {name}, Score: {score} \n")
-        f.close()
-
-
-# TODO расписать исключения
+        with open('scores.txt', 'a') as fp:
+            fp.write(f"Name: {name}, Score: {score} \n")
+            fp.close()
 
 
 class EnemyDown(Exception):

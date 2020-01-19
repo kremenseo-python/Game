@@ -2,6 +2,7 @@ import random
 from exceptions import EnemyDown
 from exceptions import GameOver
 
+
 class Enemy:
 
     def __init__(self, level):
@@ -16,17 +17,16 @@ class Enemy:
 
     def decrease_lives(self):
         self.lives -= 1
-        if self.lives <= 0:
-            print("Enemy Down!")
-        return self.level
+        if not self.lives:
+            raise EnemyDown()
 
 
 class Player:
-    score = 0
-    lives = 5
 
-    def __init__(self, player_name):
+    def __init__(self, player_name, score=0, lives=5):
         self.player_name = player_name
+        self.score = score
+        self.lives = lives
 
     @staticmethod
     def fight(attack, defense):
@@ -61,7 +61,6 @@ class Player:
             print('Your total score is ', self.score)
             GameOver.save_result(self.player_name, self.score)
             raise GameOver()
-        return self.lives
 
     def attack(self, enemy_obj):
         print("Turn Player")
@@ -78,7 +77,6 @@ class Player:
             self.score += 1
         elif result_fight == -1:
             print("You missed!")
-            self.decrease_lives()
 
     def defence(self, enemy_obj):
         print("Turn Computer")
@@ -94,9 +92,9 @@ class Player:
             self.decrease_lives()
         elif result_fight == -1:
             print("Enemy missed!")
-            enemy_obj.decrease_lives()
             self.score += 1
 
-    def choice(self):
+    @staticmethod
+    def choice():
         """Метод для выбора героя"""
         print("Choose your HERO: 1 - MAG, 2 - WARRIOR, 3 - ROGUE")
